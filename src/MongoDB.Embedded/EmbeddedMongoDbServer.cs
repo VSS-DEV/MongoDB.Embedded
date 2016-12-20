@@ -34,6 +34,7 @@ namespace MongoDB.Embedded
             _path = Path.Combine(Path.GetTempPath(), RandomFileName(12));
             Directory.CreateDirectory(_path);
 
+            #if !NETSTANDARD1_6
             using (var resourceStream = typeof(EmbeddedMongoDbServer).Assembly.GetManifestResourceStream(typeof(EmbeddedMongoDbServer), "mongod.exe"))
             using (var fileStream = new FileStream(Path.Combine(_path, _name + ".exe"), FileMode.Create, FileAccess.Write))
             {
@@ -83,6 +84,8 @@ namespace MongoDB.Embedded
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
 
+            #endif
+
             _gate.Wait(10000);
         }
 
@@ -98,6 +101,7 @@ namespace MongoDB.Embedded
 
         private static string RandomFileName(int length)
         {
+#if !NETSTANDARD1_6
             var chars = "abcdefghijklmnopqrstuvwxyz1234567890".ToCharArray();
             var data = new byte[1];
             var crypto = new RNGCryptoServiceProvider();
@@ -109,6 +113,12 @@ namespace MongoDB.Embedded
                 result.Append(chars[b % chars.Length]);
 
             return result.ToString();
+#else
+
+            var result = Guid.NewGuid();
+            return result.ToString("N");
+
+#endif
         }
 
         private static int GetRandomUnusedPort()

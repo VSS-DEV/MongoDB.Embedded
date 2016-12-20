@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Embedded;
+using MongoDB.Driver;
 using Xunit;
 
 namespace MongoDB.Embedded.Tests
